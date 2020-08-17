@@ -115,10 +115,19 @@ def train(args, dataset, model, tokenizer, labels, pad_token_label_id):
                     # -- Only evaluate when single GPU otherwise metrics may not average well
                     results, _ = evaluate(
                         args=args,
+                        eval_title='validation',
                         eval_dataset=dataset["validation"],
                         model=model, labels=labels,
                         pad_token_label_id=pad_token_label_id
                     )
+                    if args.do_eval_test_in_training:
+                        evaluate(
+                            args=args,
+                            eval_title='test',
+                            eval_dataset=dataset["test"],
+                            model=model, labels=labels,
+                            pad_token_label_id=pad_token_label_id
+                        )
 
                     logging_loss = tr_loss
                     metric = results['f1']
@@ -142,7 +151,7 @@ def train(args, dataset, model, tokenizer, labels, pad_token_label_id):
     return global_step, tr_loss / global_step, best_metric, best_epoch
 
 
-def evaluate(args, eval_dataset, model, labels, pad_token_label_id):
+def evaluate(args, eval_title, eval_dataset, model, labels, pad_token_label_id):
     """ Evaluates the given model on the given dataset. """
 
     # Note that DistributedSampler samples randomly
@@ -211,7 +220,7 @@ def evaluate(args, eval_dataset, model, labels, pad_token_label_id):
             "f1": seqeval_metrics.f1_score(out_label_list, preds_list),
         }
 
-    logging.info("***** Eval results *****")
+    logging.info("***** Eval results for {} *****".format(eval_title))
     for key in sorted(results.keys()):
         logging.info("  %s = %s", key, str(results[key]))
 
