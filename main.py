@@ -144,12 +144,12 @@ def parse_args():
         action="store_true",
         help="Perform the evaluation on test data during training."
     )
-    args = parser.parse_args()
     parser.add_argument(
         "--output_dir",
         type=str,
         help="Output directory for storing all the outputs"
     )
+    args = parser.parse_args()
     return args
 
 def main(args):
