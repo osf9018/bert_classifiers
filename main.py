@@ -145,6 +145,11 @@ def parse_args():
         help="Perform the evaluation on test data during training."
     )
     args = parser.parse_args()
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        help="Output directory for storing all the outputs"
+    )
     return args
 
 def main(args):
@@ -269,11 +274,12 @@ def main(args):
     # Training
     if args.do_train:
         args.start_time = datetime.datetime.now().strftime('%d-%m-%Y_%Hh%Mm%Ss')
-        args.output_dir = os.path.join(
-            args.train_output_dir,
-            args.embedding,
-            f'{args.start_time}__seed-{args.seed}')
-        # --------------------------------- MODEL ---------------------------------
+        if args.output_dir is None:
+            args.output_dir = os.path.join(
+                args.train_output_dir,
+                args.embedding,
+                f'{args.start_time}__seed-{args.seed}')
+            # --------------------------------- MODEL ---------------------------------
         # Initialize model
         if args.task == 'classification':
             model = BertForSequenceClassification
