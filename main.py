@@ -332,7 +332,10 @@ def main(args):
         else:
             raise NotImplementedError
         logging.disable(logging.INFO)
-        model = model.from_pretrained(args.output_dir)
+        config = BertConfig.from_pretrained(
+            os.path.join(args.pretrained_model, args.embedding),
+            num_labels=num_labels)
+        model = model.from_pretrained(args.output_dir, config=config)
         logging.disable(logging.NOTSET)
         model.to(args.device)
 
